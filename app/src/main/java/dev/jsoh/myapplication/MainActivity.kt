@@ -21,7 +21,9 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        val adapter = TodoAdapter()
+        val adapter = TodoAdapter { item ->
+            viewModel.update(item)
+        }
         todo_list.layoutManager = LinearLayoutManager(this)
         todo_list.adapter = adapter
 
@@ -36,7 +38,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class TodoAdapter : ListAdapter<Todo, TodoAdapter.TodoViewHolder>(DIFF_CALLBACK) {
+class TodoAdapter(private val clickListener: (item: Todo) -> Unit) :
+    ListAdapter<Todo, TodoAdapter.TodoViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
@@ -46,6 +49,11 @@ class TodoAdapter : ListAdapter<Todo, TodoAdapter.TodoViewHolder>(DIFF_CALLBACK)
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.binding.todo = getItem(position)
+        holder.binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
+            val item = getItem(position)
+            item.isDone = isChecked
+            clickListener.invoke(item)
+        }
     }
 
     class TodoViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)

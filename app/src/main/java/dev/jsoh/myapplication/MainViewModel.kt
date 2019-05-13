@@ -22,4 +22,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             db.todoDao().insert(todo)
         }
     }
+
+    fun update(todo: Todo) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.todoDao().update(todo)
+        }
+    }
 }
