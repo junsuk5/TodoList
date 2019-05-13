@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private var lastDeletedItem : Todo? = null
 
     private val db by lazy {
         Room.databaseBuilder(application, AppDatabase::class.java, "todo").build()
@@ -26,6 +27,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun update(todo: Todo) {
         CoroutineScope(Dispatchers.IO).launch {
             db.todoDao().update(todo)
+        }
+    }
+
+    fun delete(todo: Todo) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.todoDao().delete(todo)
+            lastDeletedItem = todo
+        }
+    }
+
+    fun undo() {
+        lastDeletedItem?.let {
+            CoroutineScope(Dispatchers.IO).launch {
+                db.todoDao().insert(it)
+                lastDeletedItem = null
+            }
         }
     }
 }
