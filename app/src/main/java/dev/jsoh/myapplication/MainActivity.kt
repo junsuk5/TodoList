@@ -1,7 +1,9 @@
 package dev.jsoh.myapplication
 
+import android.animation.Animator
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -19,9 +21,30 @@ class MainActivity : AppCompatActivity() {
 
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
+        // Lottie 애니메이션 콜백
+        animation_view.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                animation_view.visibility = View.GONE
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+
+        })
+
         // 클릭 이벤트
         val adapter = TodoAdapter { item ->
             viewModel.update(item)
+            if (item.isDone) {
+                animation_view.visibility = View.VISIBLE
+                animation_view.playAnimation()
+            }
         }
         todo_list.layoutManager = LinearLayoutManager(this)
         todo_list.adapter = adapter
