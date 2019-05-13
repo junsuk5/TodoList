@@ -6,7 +6,7 @@ import dev.jsoh.myapplication.models.Todo
 
 @Dao
 interface TodoDao {
-    @Query("SELECT * FROM todo")
+    @Query("SELECT * FROM todo ORDER BY isDone, uid")
     fun getAll(): LiveData<List<Todo>>
 
     @Insert

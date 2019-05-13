@@ -44,16 +44,16 @@ class TodoAdapter(private val clickListener: (item: Todo) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_todo, parent, false)
         val viewHolder = TodoViewHolder(ItemTodoBinding.bind(view))
+        viewHolder.binding.checkbox.setOnClickListener {
+            val item = getItem(viewHolder.adapterPosition)
+            item.isDone = !item.isDone
+            clickListener.invoke(item)
+        }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.binding.todo = getItem(position)
-        holder.binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
-            val item = getItem(position)
-            item.isDone = isChecked
-            clickListener.invoke(item)
-        }
     }
 
     class TodoViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)
