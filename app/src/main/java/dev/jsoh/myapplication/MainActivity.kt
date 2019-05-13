@@ -1,8 +1,9 @@
 package dev.jsoh.myapplication
 
-import android.animation.Animator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -15,49 +16,38 @@ import dev.jsoh.myapplication.models.Todo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    lateinit var touchHelper: ItemTouchHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        // Lottie 애니메이션 콜백
-        animation_view.addAnimatorListener(object : Animator.AnimatorListener {
-            override fun onAnimationRepeat(animation: Animator?) {
-            }
-
-            override fun onAnimationEnd(animation: Animator?) {
-                animation_view.visibility = View.GONE
-            }
-
-            override fun onAnimationCancel(animation: Animator?) {
-            }
-
-            override fun onAnimationStart(animation: Animator?) {
-            }
-
-        })
+        animation_view.setOnClickListener {
+            it.visibility = View.GONE
+        }
 
         // 클릭 이벤트
-        val adapter = TodoAdapter { item ->
-            viewModel.update(item)
-            if (item.isDone) {
-                animation_view.visibility = View.VISIBLE
-                animation_view.playAnimation()
-            }
-        }
+        val adapter = TodoAdapter(
+            clickListener = { item -> viewModel.update(item) },
+            dragListener = { holder -> touchHelper.startDrag(holder) }
+        )
         todo_list.layoutManager = LinearLayoutManager(this)
         todo_list.adapter = adapter
 
         // 스와이프 삭제
-        val touchHelper = ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        touchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -73,6 +63,11 @@ class MainActivity : AppCompatActivity() {
         // Query
         viewModel.todos().observe(this, Observer {
             adapter.submitList(it)
+            if (it.none { todo -> !todo.isDone }) {
+                animation_view.visibility = View.VISIBLE
+                animation_view.playAnimation()
+                viewModel.deleteAll()
+            }
         })
 
         // 추가
@@ -83,7 +78,10 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class TodoAdapter(private val clickListener: (item: Todo) -> Unit) :
+class TodoAdapter(
+    private val clickListener: (item: Todo) -> Unit,
+    private val dragListener: (viewHolder: RecyclerView.ViewHolder) -> Unit
+) :
     ListAdapter<Todo, TodoAdapter.TodoViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
@@ -97,8 +95,15 @@ class TodoAdapter(private val clickListener: (item: Todo) -> Unit) :
         return viewHolder
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.binding.todo = getItem(position)
+        holder.binding.handle.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                dragListener.invoke(holder)
+            }
+            false
+        }
     }
 
     class TodoViewHolder(val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root)
