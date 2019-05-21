@@ -1,10 +1,10 @@
-package dev.jsoh.myapplication
+package dev.jsoh.todo
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.room.Room
-import dev.jsoh.myapplication.models.Todo
-import dev.jsoh.myapplication.repository.AppDatabase
+import dev.jsoh.todo.models.Todo
+import dev.jsoh.todo.repository.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,7 +14,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db by lazy {
         Room.databaseBuilder(application, AppDatabase::class.java, "todo")
-            .allowMainThreadQueries()
             .build()
     }
 
@@ -55,13 +54,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun swap(from: Todo, to: Todo) {
-        db.runInTransaction {
-            val fromIndex = from.uid
-            val toIndex = to.uid
-            from.uid = toIndex
-            to.uid = fromIndex
-            update(from)
-            update(to)
+        CoroutineScope(Dispatchers.IO).launch {
+            db.runInTransaction {
+                val fromIndex = from.uid
+                val toIndex = to.uid
+                from.uid = toIndex
+                to.uid = fromIndex
+                update(from)
+                update(to)
+            }
         }
     }
 }

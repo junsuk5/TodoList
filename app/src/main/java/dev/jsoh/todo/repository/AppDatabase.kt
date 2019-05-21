@@ -1,8 +1,8 @@
-package dev.jsoh.myapplication.repository
+package dev.jsoh.todo.repository
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import dev.jsoh.myapplication.models.Todo
+import dev.jsoh.todo.models.Todo
 
 @Database(entities = [Todo::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {

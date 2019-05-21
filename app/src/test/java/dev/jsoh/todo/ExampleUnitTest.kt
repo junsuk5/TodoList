@@ -1,4 +1,4 @@
-package dev.jsoh.myapplication
+package dev.jsoh.todo
 
 import org.junit.Test
 

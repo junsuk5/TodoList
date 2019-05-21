@@ -1,4 +1,4 @@
-package dev.jsoh.myapplication
+package dev.jsoh.todo
 
 import android.os.Bundle
 import android.view.View
@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import dev.jsoh.myapplication.models.Todo
-import dev.jsoh.myapplication.ui.TodoAdapter
+import dev.jsoh.todo.models.Todo
+import dev.jsoh.todo.ui.TodoAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    lateinit var touchHelper: ItemTouchHelper
+    private lateinit var touchHelper: ItemTouchHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false
+                return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {

@@ -5,7 +5,7 @@
 
         <variable
             name="todo"
-            type="dev.jsoh.myapplication.models.Todo" />
+            type="dev.jsoh.todo.models.Todo" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -1,4 +1,4 @@
-package dev.jsoh.myapplication.models
+package dev.jsoh.todo.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

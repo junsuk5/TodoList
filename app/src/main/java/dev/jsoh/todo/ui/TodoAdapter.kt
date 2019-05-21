@@ -1,4 +1,4 @@
-package dev.jsoh.myapplication.ui
+package dev.jsoh.todo.ui
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import dev.jsoh.myapplication.R
-import dev.jsoh.myapplication.databinding.ItemTodoBinding
-import dev.jsoh.myapplication.models.Todo
+import dev.jsoh.todo.R
+import dev.jsoh.todo.databinding.ItemTodoBinding
+import dev.jsoh.todo.models.Todo
 
 class TodoAdapter(
     private val clickListener: (item: Todo) -> Unit,

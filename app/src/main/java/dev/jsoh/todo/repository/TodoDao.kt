@@ -1,8 +1,8 @@
-package dev.jsoh.myapplication.repository
+package dev.jsoh.todo.repository
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import dev.jsoh.myapplication.models.Todo
+import dev.jsoh.todo.models.Todo
 
 @Dao
 interface TodoDao {
